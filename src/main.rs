@@ -1,61 +1,14 @@
+mod cli;
+mod formats;
+
 use std::{fs::File, io::{BufReader, BufRead}};
 
 use anyhow::Result;
-use clap::{ValueEnum, Parser};
+use clap::Parser;
+use cli::Cli;
 use graph6_rs::{GraphConversion, IOError};
+use formats::{Graph6Format, OutputFormat};
 
-
-#[derive(Default, Debug, Copy, Clone, ValueEnum)]
-pub enum Graph6Format {
-    /// The default undirected format
-    #[default]
-    Graph,
-    /// The digraph format
-    Digraph,
-    /// The sparse6 format
-    Sparse6,
-}
-
-#[derive(Default, Debug, Copy, Clone, ValueEnum)]
-pub enum OutputFormat {
-    /// The default adjacency matrix format
-    #[default]
-    Adjmat,
-    /// The DOT format
-    DOT,
-    /// The Pavek NET format
-    NET,
-}
-
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-pub struct Cli {
-
-    /// The path to the file to read
-    #[clap(short, long)]
-    pub input: String,
-
-    /// The path to the file to write
-    #[clap(short, long)]
-    pub output: Option<String>,
-
-    /// The graph6 format to use
-    #[clap(short = 'f', long, default_value = "graph")]
-    pub iformat: Graph6Format,
-
-    /// The output format to use
-    #[clap(short = 'F', long, default_value = "adjmat")]
-    pub oformat: OutputFormat,
-
-    /// Number of graphs to write
-    #[clap(short, long)]
-    pub count: Option<usize>,
-
-    /// Number of graphs to skip
-    #[clap(short, long)]
-    pub skip: Option<usize>,
-
-}
 
 fn read_file(path: &str, iformat: Graph6Format, oformat: OutputFormat, count: Option<usize>, skip: Option<usize>) -> Result<()> {
     let buffer = File::open(path).map(BufReader::new)?;
