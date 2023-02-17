@@ -2,6 +2,9 @@
 name = "convg"
 version = "0.1.0"
 edition = "2021"
+description = "A tool to convert directed and undirected graphs from NAUTY and Traces into adjacency, dot, and net files."
+license = "MIT"
+keywords = ["graph", "nauty", "cli", "parser"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
