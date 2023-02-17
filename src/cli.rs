@@ -1,10 +1,9 @@
-use clap::Parser;
 use crate::formats::{Graph6Format, OutputFormat};
+use clap::Parser;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-
     /// The path to the file to read
     #[clap(short, long)]
     pub input: Option<String>,
@@ -28,5 +27,4 @@ pub struct Cli {
     /// Number of graphs to skip
     #[clap(short, long)]
     pub skip: Option<usize>,
-
 }

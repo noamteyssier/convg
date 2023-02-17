@@ -1,22 +1,35 @@
 mod cli;
 mod formats;
 
-use std::{fs::File, io::{BufReader, BufRead}};
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+};
 
 use anyhow::Result;
 use clap::Parser;
 use cli::Cli;
-use graph6_rs::{GraphConversion, IOError};
 use formats::{Graph6Format, OutputFormat};
+use graph6_rs::{GraphConversion, IOError};
 
-
-fn read_file(path: &str, iformat: Graph6Format, oformat: OutputFormat, count: Option<usize>, skip: Option<usize>) -> Result<()> {
+fn read_file(
+    path: &str,
+    iformat: Graph6Format,
+    oformat: OutputFormat,
+    count: Option<usize>,
+    skip: Option<usize>,
+) -> Result<()> {
     let buffer = File::open(path).map(BufReader::new)?;
     process_buffer(buffer, iformat, oformat, count, skip)?;
     Ok(())
 }
 
-fn read_stdin(iformat: Graph6Format, oformat: OutputFormat, count: Option<usize>, skip: Option<usize>) -> Result<()> {
+fn read_stdin(
+    iformat: Graph6Format,
+    oformat: OutputFormat,
+    count: Option<usize>,
+    skip: Option<usize>,
+) -> Result<()> {
     let stdin = std::io::stdin();
     let buffer = BufReader::new(stdin.lock());
     process_buffer(buffer, iformat, oformat, count, skip)?;
@@ -50,14 +63,20 @@ fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversio
     }
 }
 
-fn process_buffer<B: BufRead>(buffer: B, iformat: Graph6Format, oformat: OutputFormat, count: Option<usize>, skip: Option<usize>) -> Result<()> {
+fn process_buffer<B: BufRead>(
+    buffer: B,
+    iformat: Graph6Format,
+    oformat: OutputFormat,
+    count: Option<usize>,
+    skip: Option<usize>,
+) -> Result<()> {
     let lines = buffer.lines();
     let mut idx = 0;
     let mut n_graphs = 0;
     for line in lines {
         if let Ok(record) = line {
             let repr = record.trim();
-            
+
             // Skip empty lines
             if repr.is_empty() {
                 continue;
