@@ -51,10 +51,10 @@ fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversio
 }
 
 fn process_buffer<B: BufRead>(buffer: B, iformat: Graph6Format, oformat: OutputFormat, count: Option<usize>, skip: Option<usize>) -> Result<()> {
-    let mut lines = buffer.lines();
+    let lines = buffer.lines();
     let mut idx = 0;
     let mut n_graphs = 0;
-    while let Some(line) = lines.next() {
+    for line in lines {
         if let Ok(record) = line {
             let repr = record.trim();
             
