@@ -16,8 +16,26 @@ fn read_file(path: &str, iformat: Graph6Format, oformat: OutputFormat, count: Op
     Ok(())
 }
 
+fn read_stdin(iformat: Graph6Format, oformat: OutputFormat, count: Option<usize>, skip: Option<usize>) -> Result<()> {
+    let stdin = std::io::stdin();
+    let buffer = BufReader::new(stdin.lock());
+    process_buffer(buffer, iformat, oformat, count, skip)?;
+    Ok(())
+}
+
 fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversion>, IOError> {
     match format {
+        Graph6Format::Auto => {
+            if repr.starts_with('&') {
+                read_graph(repr, Graph6Format::Digraph)
+            } else if repr.starts_with(':') {
+                read_graph(repr, Graph6Format::Sparse6)
+            } else if repr.starts_with(';') {
+                read_graph(repr, Graph6Format::IncSparse6)
+            } else {
+                read_graph(repr, Graph6Format::Graph)
+            }
+        }
         Graph6Format::Graph => {
             let g = graph6_rs::Graph::from_g6(repr)?;
             Ok(Box::new(g))
@@ -26,7 +44,7 @@ fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversio
             let g = graph6_rs::DiGraph::from_d6(repr)?;
             Ok(Box::new(g))
         }
-        Graph6Format::Sparse6 => {
+        _ => {
             unimplemented!();
         }
     }
@@ -86,6 +104,10 @@ fn process_buffer<B: BufRead>(buffer: B, iformat: Graph6Format, oformat: OutputF
 
 fn main() -> Result<()> {
     let args = Cli::parse();
-    read_file(&args.input, args.iformat, args.oformat, args.count, args.skip)?;
+    if let Some(input) = args.input {
+        read_file(&input, args.iformat, args.oformat, args.count, args.skip)?;
+    } else {
+        read_stdin(args.iformat, args.oformat, args.count, args.skip)?;
+    }
     Ok(())
 }
