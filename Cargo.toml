@@ -1,6 +1,6 @@
 [package]
 name = "convg"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A tool to convert directed and undirected graphs from NAUTY and Traces into adjacency, dot, and net files."
 license = "MIT"
@@ -11,4 +11,4 @@ keywords = ["graph", "nauty", "cli", "parser"]
 [dependencies]
 anyhow = "1.0.69"
 clap = { version = "4.1.6", features = ["derive"] }
-graph6-rs = "0.1.2"
+graph6-rs = "0.1.6"
