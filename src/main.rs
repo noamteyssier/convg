@@ -58,7 +58,7 @@ fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversio
             Ok(Box::new(g))
         }
         _ => {
-            unimplemented!();
+            unimplemented!("Sparse graphs are not supported yet.")
         }
     }
 }
