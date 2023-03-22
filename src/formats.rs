@@ -24,4 +24,6 @@ pub enum OutputFormat {
     DOT,
     /// The Pavek NET format
     NET,
+    /// A flat adjacency matrix format
+    Flat,
 }

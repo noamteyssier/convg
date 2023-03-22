@@ -114,6 +114,10 @@ fn process_buffer<B: BufRead>(
                 OutputFormat::NET => {
                     let net = graph.to_net();
                     println!("{}", net);
+                },
+                OutputFormat::Flat => {
+                    let flat = graph.to_flat();
+                    println!("{}", flat);
                 }
             }
         }
