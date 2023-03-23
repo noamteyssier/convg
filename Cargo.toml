@@ -12,4 +12,4 @@ repository = "https://github.com/noamteyssier/convg"
 [dependencies]
 anyhow = "1.0.69"
 clap = { version = "4.1.6", features = ["derive"] }
-graph6-rs = "0.1.7"
+graph6-rs = "0.1.8"
