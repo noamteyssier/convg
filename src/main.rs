@@ -10,7 +10,12 @@ use anyhow::Result;
 use clap::Parser;
 use cli::Cli;
 use formats::{Graph6Format, OutputFormat};
-use graph6_rs::{GraphConversion, IOError};
+use graph6_rs::{GraphConversion, IOError, WriteGraph};
+
+/// A trait for graphs that can be processed by this program.
+trait ProcessGraph: GraphConversion + WriteGraph {}
+impl ProcessGraph for graph6_rs::Graph {}
+impl ProcessGraph for graph6_rs::DiGraph {}
 
 fn read_file(
     path: &str,
@@ -36,7 +41,7 @@ fn read_stdin(
     Ok(())
 }
 
-fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversion>, IOError> {
+fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn ProcessGraph>, IOError> {
     match format {
         Graph6Format::Auto => {
             if repr.starts_with('&') {
@@ -45,6 +50,8 @@ fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversio
                 read_graph(repr, Graph6Format::Sparse6)
             } else if repr.starts_with(';') {
                 read_graph(repr, Graph6Format::IncSparse6)
+            } else if repr.starts_with("0") || repr.starts_with("1") {
+                read_graph(repr, Graph6Format::Flat)
             } else {
                 read_graph(repr, Graph6Format::Graph)
             }
@@ -56,7 +63,27 @@ fn read_graph(repr: &str, format: Graph6Format) -> Result<Box<dyn GraphConversio
         Graph6Format::Digraph => {
             let g = graph6_rs::DiGraph::from_d6(repr)?;
             Ok(Box::new(g))
-        }
+        },
+        Graph6Format::Flat | Graph6Format::Flatd => {
+            let adj = repr.chars()
+                .map(|c| {
+                    assert!(c == '1' || c == '0', "Invalid character in adjacency matrix: {}", c);
+                    c
+                })
+                .map(|c| c.to_digit(10).unwrap() as usize)
+                .collect::<Vec<_>>();
+            match format {
+                Graph6Format::Flat => {
+                    let g = graph6_rs::Graph::from_adj(&adj)?;
+                    Ok(Box::new(g))
+                },
+                Graph6Format::Flatd => {
+                    let g = graph6_rs::DiGraph::from_adj(&adj)?;
+                    Ok(Box::new(g))
+                },
+                _ => unreachable!(),
+            }
+        },
         _ => {
             unimplemented!("Sparse graphs are not supported yet.")
         }
@@ -118,7 +145,11 @@ fn process_buffer<B: BufRead>(
                 OutputFormat::Flat => {
                     let flat = graph.to_flat();
                     println!("{}", flat);
-                }
+                },
+                OutputFormat::Nauty => {
+                    let d6 = graph.write_graph();
+                    println!("{}", d6);
+                },
             }
         }
     }
