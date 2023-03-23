@@ -10,6 +10,10 @@ pub enum Graph6Format {
     Sparse6,
     /// The incremental sparse6 format
     IncSparse6,
+    /// Flat undirected adjacency matrix format
+    Flat,
+    /// Flat directed adjacency matrix format
+    Flatd,
     /// Automatically determine the format
     #[default]
     Auto,
@@ -26,4 +30,6 @@ pub enum OutputFormat {
     NET,
     /// A flat adjacency matrix format
     Flat,
+    /// The Nauty Graph6/Digraph6 format
+    Nauty,
 }
